@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apiservice
+  labels:
+    app: mgmt
+spec:
+  selector:
+    app: mgmt
+  type: NodePort
+  ports:
+  - name: apiservice
+    port: 8888
+    targetPort: 8888
+    nodePort: 30088
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sched
+  labels:
+    app: mgmt
+spec:
+  selector:
+    app: mgmt
+  type: NodePort
+  ports:
+  - name: sched
+    port: 8080
+    targetPort: 8080
+    nodePort: 30081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing
+  labels:
+    app: billing
+spec:
+  selector:
+    app: billing
+  type: NodePort
+  ports:
+  - name: billing
+    port: 8080
+    targetPort: 8080
+    nodePort: 30082

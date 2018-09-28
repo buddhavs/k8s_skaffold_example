@@ -1,0 +1,68 @@
+apiVersion: skaffold/v1alpha2
+kind: Config
+profiles:
+- name: dev
+  build:
+    tagPolicy:
+      # using sha256 hash as docker image tag for each build.
+      sha256: {}
+    artifacts:
+      # Name of built docker image.
+    - imageName: dev_1
+      # The root of your working source files.
+      # This is essential, please set it correctly.
+      # Docker can only COPY/ADD files into layers
+      # from it's build 'root' directory.
+      # Kinda like chroot().
+      # workspace mapping to "docker build workspace"
+      workspace: /files/go_project/src/my_project
+      # Since it's local dev enviroment, we use docker build.
+      docker:
+        # Setting this to relavent path to workspace.
+        # By default it will look for workspace/Dockerfile
+        # However, we are going to trigger build base on dev_1 package
+        # thus set this to our Dockerfile base on dev_1 service.
+        dockerfilePath: automation/dev_1/Dockerfile
+    - imageName: dev_2
+      workspace: /files/go_project/src/my_project
+      docker:
+        dockerfilePath: automation/dev_2/Dockerfile
+    - imageName: dev_3
+      workspace: /files/go_project/src/my_project
+      docker:
+        dockerfilePath: automation/dev_3/Dockerfile
+    local:
+      # Do not push to any docker hub.
+     skipPush: true
+  deploy:
+    helm:
+      # Helm releases
+      releases:
+      - name: dev-release
+        # Where the helm chart resides.
+        chartPath: ./dev_helm
+        # k8s namespace
+        namespace: default
+        # Setting helm values.yalm template.
+        setValueTemplates:
+          # By default there are several ENV being set by skaffold.
+          # .DIGEST format: IMAGE_NAME:SHA256_HASH
+          api.image: "{{.DIGEST}}"
+          # We don't need to pull the image since it's locally built.
+          api.pullPolicy: Never
+          # To refer to second build imagename, just using .DIGEST2, etc.
+          sched.image: "{{.DIGEST2}}"
+          sched.pullPolicy: Never
+          billing.image: "{{.DIGEST3}}"
+          billing.pullPolicy: Never
+        values:
+          # You can name whatever key name you like, it doesn't matter,
+          # skaffold's source code will ignore it...
+          # However, the value must maps to the build imagename
+          apiImage: dev_1  # or {{ .IMAGE }}
+          schedImage: dev_2  # or {{ .IMAGE2 }}
+          billingImage: dev_3  # or {{ .IMAGE3 }}
+        setValues:
+          # helm --set key:value
+          global.BackupIp: 10.0.0.1
+          global.RestoreIp: 10.0.0.2

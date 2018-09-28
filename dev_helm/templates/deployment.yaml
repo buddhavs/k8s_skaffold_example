@@ -1,0 +1,78 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-mgmt
+  labels:
+    app: mgmt
+spec:
+  selector:
+    matchLabels:
+      app: mgmt
+  template:
+    metadata:
+      labels:
+        app: mgmt
+    spec:
+      containers:
+        - name: api
+          image: {{ .Values.api.image }}
+          imagePullPolicy: {{ .Values.api.pullPolicy }}
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 8889
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 8889
+            initialDelaySeconds: 30
+            periodSeconds: 5
+        - name: sched
+          image: {{ .Values.sched.image }}
+          imagePullPolicy: {{ .Values.sched.pullPolicy }}
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 5
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-billing
+  labels:
+    app: billing
+spec:
+  selector:
+    matchLabels:
+      app: billing
+  template:
+    metadata:
+      labels:
+        app: billing
+    spec:
+      containers:
+        - name: billing
+          image: {{ .Values.billing.image }}
+          imagePullPolicy: {{ .Values.billing.pullPolicy }}
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 5

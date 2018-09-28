@@ -1,0 +1,17 @@
+api:
+  repository: XXX
+  image: XXX
+  tag: latest
+  pullPolicy: Always
+
+sched:
+  repository: XXX
+  image: XXX
+  tag: latest
+  pullPolicy: Always
+
+billing:
+  repository: XXX
+  image: XXX
+  tag: latest
+  pullPolicy: Always
