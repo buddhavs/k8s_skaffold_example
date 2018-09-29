@@ -59,9 +59,9 @@ profiles:
           # You can name whatever key name you like, it doesn't matter,
           # skaffold's source code will ignore it...
           # However, the value must maps to the build imagename
-          apiImage: dev_1  # or {{ .IMAGE }}
-          schedImage: dev_2  # or {{ .IMAGE2 }}
-          billingImage: dev_3  # or {{ .IMAGE3 }}
+          apiImage: dev_1  # or {{ .IMAGE_NAME}}
+          schedImage: dev_2  # or {{ .IMAGE_NAME2 }}
+          billingImage: dev_3  # or {{ .IMAGE_NAME3}}
         setValues:
           # helm --set key:value
           global.BackupIp: 10.0.0.1
